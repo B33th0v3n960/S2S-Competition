@@ -3,7 +3,7 @@ package com.s2s;
 public class ISBN {
     /*
      * ISBN10 must have 10 digits {a1, a2, ..., a10}
-     * a1 * 10 + a2 * 9 + ... + a10 * 1 ≡ 0 (mod 10)
+     * a1 * 10 + a2 * 9 + ... + a10 * 1 ≡ 0 (mod 11)
      *
      * Note: a10 can be X, to represent the value 10
      * 
