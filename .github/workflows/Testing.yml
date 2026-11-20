@@ -1,0 +1,108 @@
+name: Running Unit Tests
+run-name: ${{ github.actor }} running Test
+
+on: push
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      # Each step runs every test for one function, listed by name.
+      # `success() || failure()` lets every step run even if an earlier one fails.
+      # A misspelt or removed test name makes its step fail ("No tests matching pattern").
+
+      # ---------- Prime ----------
+
+      - name: Testing isCarmichaelNumber
+        if: success() || failure()
+        run: |
+          TESTS=(
+            carmichaelKnownNumbers
+            carmichaelPrimesAreNotCarmichael
+            carmichaelOrdinaryCompositesAreNotCarmichael
+            carmichaelSmallAndNonPositiveInputs
+          )
+          ./mvnw test -Dtest="PrimeTest#$(IFS=+; echo "${TESTS[*]}")"
+
+      - name: Testing nextCarmichaelNumber
+        if: success() || failure()
+        run: |
+          TESTS=(
+            nextCarmichaelFromBelowFirst
+            nextCarmichaelIsStrictlyGreater
+            nextCarmichaelFromBetween
+            nextCarmichaelFromNegative
+          )
+          ./mvnw test -Dtest="PrimeTest#$(IFS=+; echo "${TESTS[*]}")"
+
+      - name: Testing totient
+        if: success() || failure()
+        run: |
+          TESTS=(
+            totientOfPrimeIsPMinusOne
+            totientOfComposites
+            totientOfOne
+          )
+          ./mvnw test -Dtest="PrimeTest#$(IFS=+; echo "${TESTS[*]}")"
+
+      - name: Testing gcd (provided)
+        if: success() || failure()
+        run: |
+          TESTS=(
+            gcdProvided
+          )
+          ./mvnw test -Dtest="PrimeTest#$(IFS=+; echo "${TESTS[*]}")"
+
+      # ---------- ISBN ----------
+
+      - name: Testing isbn10Validate
+        if: success() || failure()
+        run: |
+          TESTS=(
+            isbn10ValidCodes
+            isbn10ValidWithXCheckDigit
+            isbn10AllZerosIsValid
+            isbn10WrongCheckDigit
+            isbn10XOnlyAllowedAsLastCharacter
+            isbn10InvalidCharacters
+            isbn10WrongLength
+            isbn10EmptyAndNull
+          )
+          ./mvnw test -Dtest="ISBNTest#$(IFS=+; echo "${TESTS[*]}")"
+
+      - name: Testing isbn13Validate
+        if: success() || failure()
+        run: |
+          TESTS=(
+            isbn13ValidCodes
+            isbn13AllZerosIsValid
+            isbn13WrongCheckDigit
+            isbn13DoesNotAcceptX
+            isbn13InvalidCharacters
+            isbn13WrongLength
+            isbn13EmptyAndNull
+          )
+          ./mvnw test -Dtest="ISBNTest#$(IFS=+; echo "${TESTS[*]}")"
+
+      - name: Testing isbn10ToIsbn13
+        if: success() || failure()
+        run: |
+          TESTS=(
+            convertTypicalCodes
+            convertCodeEndingInX
+            convertWhereCheckDigitIsZero
+            convertAllZeros
+            convertedResultIsValidIsbn13
+          )
+          ./mvnw test -Dtest="ISBNTest#$(IFS=+; echo "${TESTS[*]}")"
